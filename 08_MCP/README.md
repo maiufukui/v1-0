@@ -1,19 +1,17 @@
-<p align="center" draggable="false"><img src="https://github.com/AI-Maker-Space/LLM-Dev-101/assets/37101144/d1343317-fa2f-41e1-8af1-1dbb18399719"
-     width="200px"
-     height="auto"/>
-</p>
-
-<h1 align="center" id="heading">Session 8: Model Context Protocol (MCP)</h1>
+# Session 8: Model Context Protocol (MCP)
 
 ### [Quicklinks]()
 
-| Session Sheet | Recording | Slides | Repo | Homework | Feedback |
-|:--------------|:----------|:-------|:-----|:---------|:---------|
-| [MCP Servers](../00_Docs/Session_Sheets/17_MCP_Servers_and_A2A/README.md) | | | You are here! | | |
+
+| Session Sheet                                                             | Recording | Slides | Repo          | Homework | Feedback |
+| ------------------------------------------------------------------------- | --------- | ------ | ------------- | -------- | -------- |
+| [MCP Servers](../00_Docs/Session_Sheets/17_MCP_Servers_and_A2A/README.md) |           |        | You are here! |          |          |
+
 
 ## Useful Resources
 
 **MCP (Model Context Protocol)**
+
 - [MCP Official Docs](https://modelcontextprotocol.io/) — Spec, tutorials, and guides
 - [MCP-UI](https://mcpui.dev/) — Official standard for interactive UI in MCP
 - [MCP Auth Guide (Auth0)](https://auth0.com/blog/mcp-specs-update-all-about-auth/) — Deep dive into MCP auth spec updates
@@ -155,15 +153,40 @@ Why is OAuth important for MCP servers, and what security considerations should 
 
 #### Answer
 
-_(insert your answer here)_
+OAuth is important for MCP serviers because MCP tools are not read only APIs, rather they are able to perform real actions on behalf of the a user. In the Cat Shop server, tools like add_to_cart, remove_from_cart, and checkout change application state and can create orders. If a server is reachable over the network without authetnication, anyone who discovers the endpoint could invoke those tools directly.   
 
-### Question #2
+OAuth solves this by requiring clients to authenticate and obtain access tokens before calling protected MCP endpoints i.e. unauthenticated requests returns 401 unauthorized. Once user goes through OAuth flow discovery, user sign in on the log in page > token exchange occurs and authorizes MCP requets. 
+
+OAuth also provides identity and scoped access (read/write) so the server can enforce permissions instead of trusting every caller. 
+
+When exposting MCP tooks to AI clients, serveral security considerations matter:
+
+1. Public exposure increases attack surface. Using ngrok makes the server reachable from the public internet, so authentication is essential. without it, tool endpoints would be open to abuse.
+2. AI clients can invoke tools automatically. LLM may call tools based on user prompts so tools must be designed carefully i.e. checkout should only run when the user clearly intends to place an order, and the server should validate user identity and cart state server side
+3. Token and URL correctness matter. ISSUER_URL must match the public URL clients use. if not, oauth redirects and token valiation can fail or behave insecurely
+4. Use HTTPS for remote access.
+5. Scope and least privilege. Clients should receive only the scopes they need. broader scopes increase damange if a token is leaded or misused.
+
+OAuth turns a publicly reachable MCP server from an open remote control API into authenticated user aware system - which is necessary when AI clients can call powerful tools over the network. 
+
+Question #2
 
 What is Streamable HTTP transport in MCP, and why might you expose a server publicly with OAuth instead of using a local stdio connection?
 
 #### Answer
 
-_(insert your answer here)_
+Streamable HTTP is an MCP transport that communicates over HTTP instead of local process pipes. In this project, the server runs with mcp.run(transport='streamable-http") and exposes the MCP endpoints at /mcp. Clients send MCP requests as HTTP messages (for example, POST /mcp, GET /mcp), and the connection supports streaming session behavior rather than a single request/response exchange.  For example, in my server logs, I saw session creation, tool calls (CallToolRequest), and session termination which reflects this HTTP-based, session oriented transport model. 
+
+By contrast, local stdio connection transport runs the MCP server as a local subprocess and communicates throough stdin/stdout. That works well when the MCP client and server are on the same machine i.e. desktop app launching a local tool server - but does not naturally support remote access over a network.
+
+I would expose a server publicly with OAuth instead of using a local stdio connection for the following reasons
+
+1. client is remote. My langchain client connected to the server through an ngrok URL as the client and server were not tied to the same local process boundary
+2. need shared or multi client access. A public HTTP endpoint allows multiple clients or teammates to connect to the same MCP server, which is difficult with stdio's one local process model
+3. need to integrate with cloud or agent systems. remote agents, hosted apps or browser based clients typically need a network protocol (HTTP) rather than local pipes
+4. security is mandatory. once a server is reachable from the internet, stdio's implicit local trust is not sufficient. OAuth provides authentication, authorization scopes, and token based access control before tool execution
+
+In this session using streamable HTTP + ngrok + OAuth enabled a realistic production like pattern: a remotely reachable MCP server where only authenticated clients can invoke tools. stdio would have been easier for local only use but would not support remote, authenticated client server architecture needed for this cat shop project. 
 
 ## Activity 1: Extend the MCP Server
 

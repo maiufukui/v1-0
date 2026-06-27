@@ -139,3 +139,19 @@ async def checkout() -> dict:
         "total": cart["total"],
         "message": f"Order {order_id} confirmed! Thanks {username}, your cats will love their new goodies!",
     }
+
+@mcp.tool()
+async def search_products(query: str) -> list[dict]:
+    """Search products by keyword in name or description. Case-insensitive."""
+    db = await oauth_provider._get_db()
+    pattern = f"%{query}%"
+    cursor = await db.execute(
+        """SELECT id, name, description, price, category FROM products
+           WHERE LOWER(name) LIKE LOWER(?) OR LOWER(description) LIKE LOWER(?)""",
+        (pattern, pattern),
+    )
+    rows = await cursor.fetchall()
+    return [
+        {"id": r[0], "name": r[1], "description": r[2], "price": r[3], "category": r[4]}
+        for r in rows
+    ]
