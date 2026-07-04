@@ -1,27 +1,28 @@
-<p align="center" draggable="false"><img src="https://github.com/AI-Maker-Space/LLM-Dev-101/assets/37101144/d1343317-fa2f-41e1-8af1-1dbb18399719"
-     width="200px"
-     height="auto"/>
-</p>
 
-<h1 align="center" id="heading">Session 9: Agent Servers</h1>
+
+# Session 9: Agent Servers
 
 ### [Quicklinks]()
 
-| Session Sheet | Recording | Slides | Repo | Homework | Feedback |
-|:--------------|:----------|:-------|:-----|:---------|:---------|
-| [Session 9: Agent Servers & E2E Agents](https://github.com/AI-Maker-Space/The-AI-Engineering-Certification-v1.0/tree/main/00_Docs/Modules/09_Agent_servers_%26_E2E_Agents) |[Recording!](https://us02web.zoom.us/rec/share/ByhPGNz-CQ4C9k859VnRIoGPfkS4AdBzLPQiCIgEafYiDjYxtNXUjidTI1dM-79R.oCxzwNn0SyVAWj88) <br> passcode: `r14dvS$V`| [Session 9 Slides](https://canva.link/yqymnzjmzhpnyiy) | You are here! | [Session 9 Assignment](https://forms.gle/PMmqBBLZ8d8fGg1L8) | [Feedback 7/1](https://forms.gle/36tnHPpeS562DD3fA) |
+
+| Session Sheet                                                                                                                                                              | Recording                                                                                                                                              | Slides                                                 | Repo          | Homework                                                    | Feedback                                            |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ | ------------- | ----------------------------------------------------------- | --------------------------------------------------- |
+| [Session 9: Agent Servers & E2E Agents](https://github.com/AI-Maker-Space/The-AI-Engineering-Certification-v1.0/tree/main/00_Docs/Modules/09_Agent_servers_%26_E2E_Agents) | [Recording!](https://us02web.zoom.us/rec/share/ByhPGNz-CQ4C9k859VnRIoGPfkS4AdBzLPQiCIgEafYiDjYxtNXUjidTI1dM-79R.oCxzwNn0SyVAWj88) passcode: `r14dvS$V` | [Session 9 Slides](https://canva.link/yqymnzjmzhpnyiy) | You are here! | [Session 9 Assignment](https://forms.gle/PMmqBBLZ8d8fGg1L8) | [Feedback 7/1](https://forms.gle/36tnHPpeS562DD3fA) |
+
 
 ## Useful Resources
 
 **LangSmith Deployment & Studio**
+
 - [LangSmith Deployment docs](https://docs.langchain.com/langsmith/deployments) — Deploy, manage, and monitor agent APIs
 - [LangGraph Studio](https://docs.langchain.com/langgraph-platform/langgraph-studio) — Visualize, debug, and test agents locally and in production
 - [Agent Server API](https://docs.langchain.com/langsmith/agent-server) — Threads, runs, assistants, and streaming
 - [You don't know what your agent will do until it's in production](https://blog.langchain.com/you-dont-know-what-your-agent-will-do-until-its-in-production/)
 
 **Frontend Integration**
-- [`@langchain/react` — `useStream` hook](https://www.npmjs.com/package/@langchain/react) — Stream agent responses in React/Next.js
-- [`langgraph-nextjs-api-passthrough`](https://www.npmjs.com/package/langgraph-nextjs-api-passthrough) — Secure Next.js API routes that proxy to your deployed agent without exposing keys in the browser
+
+- `[@langchain/react` — `useStream` hook](https://www.npmjs.com/package/@langchain/react) — Stream agent responses in React/Next.js
+- `[langgraph-nextjs-api-passthrough](https://www.npmjs.com/package/langgraph-nextjs-api-passthrough)` — Secure Next.js API routes that proxy to your deployed agent without exposing keys in the browser
 - [Next.js on Vercel](https://vercel.com/docs/frameworks/nextjs) — Deploy the frontend
 
 ## What You Are Building
@@ -39,6 +40,8 @@ flowchart LR
   Agent --> Tools[Tools + RAG + memory]
   LangSmith --> Traces[LangSmith tracing & evals]
 ```
+
+
 
 > **Important:** LangSmith deploys your agent as an **API backend only**. It does not serve a frontend. Vercel hosts the UI; LangSmith hosts the agent.
 
@@ -346,7 +349,7 @@ LANGSMITH_API_KEY=lsv2_pt_...
 NEXT_PUBLIC_API_URL=https://your-app.vercel.app/api
 ```
 
-4. Deploy
+1. Deploy
 
 ### 3. Verify end-to-end
 
@@ -428,7 +431,9 @@ Why does LangSmith deploy your agent as an API backend only, and why do you stil
 
 #### Answer
 
-_(insert your answer here)_
+Langsmith deploys only the agent's runtime, the compiled graph behind a threads/runs/assistant API; it is not built to serve HTML/CSS/JS to a browser. A chat UI needs actual page hosting, routing, and client rendering which is what Vercel does for Next,js apps. 
+
+Splitting them also enforces a security boundary. The Langsmith API key needed to call the deployment must never reach the browser, so the frontend's own server side proxy (route.ts) is the only thing that ever holds it. 
 
 ### Question #2
 
@@ -436,14 +441,36 @@ Why should the LangSmith API key live in a Next.js API route (server-side) inste
 
 #### Answer
 
-_(insert your answer here)_
+Anything shipped to the browser including NEXT_PUBLIC_ env vars or hardcoded client JS is visible to anyone who opens dev tools or inspects network requests. The API keys is a bearer credential: whoever holds it can call the deployed agent driectly, run up billed usage and pull run histories. Routing every request through the server-side Next.js route means the key only lives on Vercel's server, injected from a private env var. The broswer only ever talks to the app's own domain never to Langsmith. 
 
 ## Activity 1: Build a Helpfulness Loop in Production
 
 Build an `agent_with_helpfulness` graph that adds a post-response helpfulness check: after the agent answers, a judge model decides whether the response is helpful, and if not, the graph loops back for another attempt (with a safe loop limit). Register it in `langgraph.json`, deploy it, then compare LangSmith traces for queries that pass vs. fail the helpfulness check. Does the retry loop behave differently in Studio vs. production?
+
+Built: agent_with_helpfulness wraps simple_agent in an outer StateGraph >> 
+
+agent > judge > helfpul? end: retry > agent > judge capped at MAX_LOOPS=3 
+
+The judge uses structured output to retrun a clean true/fealse instead of parsing free text. Registered in langgraph.json under its own graphID and assistant alias alongside simple_agent 
+
+Tested in Studio: four natural prompts all passed on the first attempt. The judge was lenient even when updating the system prompt to be extrememly strict because the agent received context and tool grounded answers gave the judge little to reject. To test the retry branch, Studio's checkpoint fork feature was used to manually force is_helpful to falise and resume from that point. This confirmed both exits work where the judge eventually approves, and safety cap ends it when the judge never does. 
+
+Deployed: uv run langraph deploy pushed the graph so it exists on the live Langsmith deployement, not just local dev. 
+
+Gap: 
+
+
 
 ## Advanced Activity: Auth and Custom Routes
 
 Research [LangSmith Deployments custom routes](https://github.com/langchain-samples/lsd-custom-route-react-ui) and describe how you could add authentication so each user only sees their own threads. Optionally implement a simple auth gate on your Vercel frontend.
 
 Include your findings and a demo in your Loom video.
+
+1. Add a login screen to the site frontend/app/login/page.tsx. Right now, anyone can open the chat and start typing with no real sign in at all. 
+2. Have the site remember who signed in by hardcoding user map which cecks and sets a cookie , and middleware that gates every page. Once somone logs in, the site keeps track of "this is user x" for as long as the user is using it 
+3. Stop using one shared password for every message by editing the existing proxy, route.ts. Right now every message sent to the agent uses the same single key, regardless of the user. That needs to change so each message carries the current person's identity instead
+4. Turn on the agent's check by creating app/auth.py. The aent server has a feature for reading users identity coming in with a request. Therefore, it simply needs to be swtiched on and told to trust what the site sends it. The valid tokens must match the tickens in frontend/lib/users.ts - the shared map is the trust link in this system
+5. Turn on the "only shown your own" rule. Once the server knows who is asking, another setting tags every new converation with that users name and filters only conversations with that users' name
+6. Test with 2 users with a smoke_tst.py. Log in as 2 different users in 2 different browser windows. Each start a conversation to confirm neither can see the other's conversation 
+
