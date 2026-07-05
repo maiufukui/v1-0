@@ -8,8 +8,6 @@ from pydantic import BaseModel, Field
 
 from app.graphs.simple_agent import graph as inner_agent
 
-MAX_LOOPS = 3
-
 # state schema for outerloop helpfulness check
 from typing import Literal, NotRequired
 
@@ -72,6 +70,8 @@ def add_retry_note(state: HelpfulnessState) -> dict:
     }
 
 # Routing function to end - safe limit MAX_LOOPS
+MAX_LOOPS = 3
+
 def route_after_judge(state: HelpfulnessState) -> Literal["retry", "end"]:
     if state["is_helpful"]:
         return "end"
@@ -79,6 +79,7 @@ def route_after_judge(state: HelpfulnessState) -> Literal["retry", "end"]:
         return "end"
     return "retry"
 
+# Graph flow definition
 workflow = StateGraph(HelpfulnessState)
 workflow.add_node("agent", call_agent)
 workflow.add_node("judge", judge_response)

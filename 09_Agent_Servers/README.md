@@ -1,5 +1,3 @@
-
-
 # Session 9: Agent Servers
 
 ### [Quicklinks]()
@@ -8,6 +6,8 @@
 | Session Sheet                                                                                                                                                              | Recording                                                                                                                                              | Slides                                                 | Repo          | Homework                                                    | Feedback                                            |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ | ------------- | ----------------------------------------------------------- | --------------------------------------------------- |
 | [Session 9: Agent Servers & E2E Agents](https://github.com/AI-Maker-Space/The-AI-Engineering-Certification-v1.0/tree/main/00_Docs/Modules/09_Agent_servers_%26_E2E_Agents) | [Recording!](https://us02web.zoom.us/rec/share/ByhPGNz-CQ4C9k859VnRIoGPfkS4AdBzLPQiCIgEafYiDjYxtNXUjidTI1dM-79R.oCxzwNn0SyVAWj88) passcode: `r14dvS$V` | [Session 9 Slides](https://canva.link/yqymnzjmzhpnyiy) | You are here! | [Session 9 Assignment](https://forms.gle/PMmqBBLZ8d8fGg1L8) | [Feedback 7/1](https://forms.gle/36tnHPpeS562DD3fA) |
+
+
 
 
 ## Useful Resources
@@ -21,9 +21,11 @@
 
 **Frontend Integration**
 
-- `[@langchain/react` — `useStream` hook](https://www.npmjs.com/package/@langchain/react) — Stream agent responses in React/Next.js
+- `[@langchain/react` — `useStream` hook]([https://www.npmjs.com/package/@langchain/react](https://www.npmjs.com/package/@langchain/react)) — Stream agent responses in React/Next.js
 - `[langgraph-nextjs-api-passthrough](https://www.npmjs.com/package/langgraph-nextjs-api-passthrough)` — Secure Next.js API routes that proxy to your deployed agent without exposing keys in the browser
 - [Next.js on Vercel](https://vercel.com/docs/frameworks/nextjs) — Deploy the frontend
+
+
 
 ## What You Are Building
 
@@ -44,6 +46,8 @@ flowchart LR
 
 
 > **Important:** LangSmith deploys your agent as an **API backend only**. It does not serve a frontend. Vercel hosts the UI; LangSmith hosts the agent.
+
+
 
 ## Main Assignment
 
@@ -69,6 +73,8 @@ Expected agent project layout:
         └── api/[...path]/route.ts
 ```
 
+
+
 ## Prerequisites
 
 In addition to tools from earlier sessions, you will need:
@@ -78,6 +84,8 @@ In addition to tools from earlier sessions, you will need:
 3. Your agent code pushed to a **GitHub** repository (needed for LangSmith cloud deploys)
 4. A [Vercel](https://vercel.com/) account
 5. *(Optional)* **LangSmith Plus** (~$40/month) for one-click cloud deploys via `langgraph deploy`
+
+
 
 ## Quick Command Reference
 
@@ -133,6 +141,8 @@ LANGSMITH_API_KEY=lsv2_pt_...
 NEXT_PUBLIC_API_URL=https://your-app.vercel.app/api
 ```
 
+
+
 ## Setup
 
 From this folder, install the agent environment:
@@ -155,6 +165,8 @@ TAVILY_API_KEY=
 LANGSMITH_API_KEY=
 LANGSMITH_TRACING=true
 ```
+
+
 
 ## Part 1: Run Locally and Use LangGraph Studio
 
@@ -259,6 +271,8 @@ Browser  →  /api/* on Vercel  →  LangSmith Deployment URL
               (injects API key server-side)
 ```
 
+
+
 ### 1. Scaffold the frontend
 
 From this folder:
@@ -268,6 +282,8 @@ npx create-next-app@latest frontend
 cd frontend
 npm install @langchain/react langgraph-nextjs-api-passthrough
 ```
+
+
 
 ### 2. Add the API passthrough route
 
@@ -283,6 +299,8 @@ export const { GET, POST, PUT, PATCH, DELETE, OPTIONS, runtime } =
     runtime: "edge",
   });
 ```
+
+
 
 ### 3. Build the chat UI with `useStream`
 
@@ -333,6 +351,8 @@ Open `http://localhost:3000`, send a message, and confirm you see streamed respo
 
 ## Part 4: Deploy the Frontend on Vercel
 
+
+
 ### 1. Push the frontend to GitHub
 
 Commit the `frontend/` directory (either in the same repo as your agent or a separate repo).
@@ -351,6 +371,8 @@ NEXT_PUBLIC_API_URL=https://your-app.vercel.app/api
 
 1. Deploy
 
+
+
 ### 3. Verify end-to-end
 
 Visit your Vercel URL, send a chat message, and confirm:
@@ -359,7 +381,11 @@ Visit your Vercel URL, send a chat message, and confirm:
 - Tool calls work against your deployed agent
 - Traces appear in LangSmith for each run
 
+
+
 ## Outline
+
+
 
 ### Breakout Room #1: Agent Packaging & LangGraph Studio
 
@@ -367,12 +393,16 @@ Visit your Vercel URL, send a chat message, and confirm:
 - Run `langgraph dev` and explore the agent in LangGraph Studio
 - Test with the LangGraph SDK locally
 
+
+
 ### Breakout Room #2: Deploy Agent + Build & Ship Frontend
 
 - Deploy the agent to LangSmith with `langgraph deploy`
 - Scaffold a Next.js chat UI with `useStream`
 - Add a secure API passthrough route
 - Deploy the frontend to Vercel and connect it to your LangSmith deployment
+
+
 
 ## Ship
 
@@ -383,6 +413,8 @@ A deployed agent on LangSmith **and** a live website on Vercel that uses it.
 - A short Loom of either:
   - LangGraph Studio debugging your agent, then your Vercel site chatting with the deployed agent; or
   - your Advanced Activity below
+
+
 
 ## Share
 
@@ -412,6 +444,8 @@ Shout out to @AIMakerspace !
 Feel free to reach out if you're curious or would like to collaborate on similar projects! 🤝🔥
 ```
 
+
+
 ## Submitting Your Homework
 
 Follow these steps to prepare and submit your homework assignment:
@@ -423,7 +457,11 @@ Follow these steps to prepare and submit your homework assignment:
 5. Deploy the frontend to Vercel
 6. Record a Loom video reviewing what you learned from this session
 
+
+
 ## Questions
+
+
 
 ### Question #1
 
@@ -447,19 +485,27 @@ Anything shipped to the browser including NEXT_PUBLIC_ env vars or hardcoded cli
 
 Build an `agent_with_helpfulness` graph that adds a post-response helpfulness check: after the agent answers, a judge model decides whether the response is helpful, and if not, the graph loops back for another attempt (with a safe loop limit). Register it in `langgraph.json`, deploy it, then compare LangSmith traces for queries that pass vs. fail the helpfulness check. Does the retry loop behave differently in Studio vs. production?
 
-Built: agent_with_helpfulness wraps simple_agent in an outer StateGraph >> 
+Built: agent_with_helpfulness wraps simple_agent in an outer StateGraph 
 
 agent > judge > helfpul? end: retry > agent > judge capped at MAX_LOOPS=3 
 
 The judge uses structured output to retrun a clean true/fealse instead of parsing free text. Registered in langgraph.json under its own graphID and assistant alias alongside simple_agent 
 
-Tested in Studio: four natural prompts all passed on the first attempt. The judge was lenient even when updating the system prompt to be extrememly strict because the agent received context and tool grounded answers gave the judge little to reject. To test the retry branch, Studio's checkpoint fork feature was used to manually force is_helpful to falise and resume from that point. This confirmed both exits work where the judge eventually approves, and safety cap ends it when the judge never does. 
+Test in Studio 1: Tested both simple and helpfulness agent in studio with 2 very different questions - one with a real citable answer (what vaccinations do kittens need? and one thats inherently subjective, why is my cat cute?) 
 
-Deployed: uv run langraph deploy pushed the graph so it exists on the live Langsmith deployement, not just local dev. 
+**On the question with a real answer, the judge and the base agent agree instantly.** simple_agent and agent_with_helpfulness produced essentially the same grounded, cited vaccination answer — the judge approved on the first pass because there was nothing to send back. The wrapper added no correction here because the base agent didn't need one.
 
-Gap: 
+**On the the same subjective question produces genuinely different outcomes across independent natural runs.** "Why is my cat cute?" isn't as clean-cut as the vaccination question, and it doesn't resolve the same way twice. A full run rejected all 3 attempts outright and hit MAX_LOOPS without ever approving. So with the simple it passed but with the helpfulness a vague subjective question did not pass
 
+**Tested in Studio 2: agent_helpfulness for local vs production showed** the rety loop does behave differently in local vs produciton using the How often should I deworm my cat question. 
 
+**With local, failed all 3 attempts,** hit MAX_LOOPS, and never approved. 
+
+**In production, passed clean, first attempt, loop_count 1.** Same code, same judge prompt, max loop=3 in bot hplaces - and the pass/fail outcome flipped for both questions beteween environments. 
+
+Upon closer inspection, what is not incosnistent is the judge as the rationale has clear reasoning for why to pass/fail. However, what is varying is the agent's answer - not the judge's standard. This could be due to upstream vatiations e.g., inner agen's create agent built ReAct loop generates its own search query, temperature 0 does not guarantee identical output from OpenAIs API run to run  and the in memory Qdrant index rebuilds fresh on every process start.
+
+Gap: The studio vs production test shows that in addition to poetntial judge inconsistencies, there are other potential inconsistencies in the inputs / agent's response (e.g., search query, , temperature 0 run to run variances, and in memory Qdrant index/embedding refreshes) resulting in different inputs to the agent, resulting in different outputs.  
 
 ## Advanced Activity: Auth and Custom Routes
 
@@ -467,10 +513,10 @@ Research [LangSmith Deployments custom routes](https://github.com/langchain-samp
 
 Include your findings and a demo in your Loom video.
 
-1. Add a login screen to the site frontend/app/login/page.tsx. Right now, anyone can open the chat and start typing with no real sign in at all. 
-2. Have the site remember who signed in by hardcoding user map which cecks and sets a cookie , and middleware that gates every page. Once somone logs in, the site keeps track of "this is user x" for as long as the user is using it 
+1. Add a login screen to the site frontend/app/login/page.tsx. Right now, anyone can open the chat and start typing with no real sign in at all.
+2. Have the site remember who signed in by hardcoding user map which cecks and sets a cookie , and middleware that gates every page. Once somone logs in, the site keeps track of "this is user x" for as long as the user is using it
 3. Stop using one shared password for every message by editing the existing proxy, route.ts. Right now every message sent to the agent uses the same single key, regardless of the user. That needs to change so each message carries the current person's identity instead
 4. Turn on the agent's check by creating app/auth.py. The aent server has a feature for reading users identity coming in with a request. Therefore, it simply needs to be swtiched on and told to trust what the site sends it. The valid tokens must match the tickens in frontend/lib/users.ts - the shared map is the trust link in this system
 5. Turn on the "only shown your own" rule. Once the server knows who is asking, another setting tags every new converation with that users name and filters only conversations with that users' name
-6. Test with 2 users with a smoke_tst.py. Log in as 2 different users in 2 different browser windows. Each start a conversation to confirm neither can see the other's conversation 
+6. Test with 2 users with a smoke_tst.py. Log in as 2 different users in 2 different browser windows. Each start a conversation to confirm neither can see the other's conversation
 
