@@ -1,29 +1,35 @@
-"""Retrieval-Augmented Generation (RAG) utilities and tool.
+"""OpenAI-equivalent Retrieval-Augmented Generation (RAG) pipeline.
 
-This module builds an in-memory RAG pipeline that:
-- Loads PDF documents from `RAG_DATA_DIR` (default: "data").
-- Splits documents into chunks using a token-aware splitter.
-- Embeds chunks with OpenAI and stores vectors in an in-memory Qdrant store.
-- Exposes a LangChain Tool `retrieve_information` that retrieves relevant
-  context and generates a response constrained to that context.
+Mirrors rag.py's pipeline shape (load PDF -> chunk -> embed -> retrieve ->
+generate), but backed by OpenAI instead of Fireworks:
+- Embeds chunks with OpenAI's `text-embedding-3-small` and stores vectors
+  in an in-memory Qdrant store.
+- Generates answers with OpenAI's `gpt-4.1-mini`, constrained to the
+  retrieved context.
+
+Unlike rag.py's `retrieve_information`, this isn't exposed as a LangChain
+`@tool` for an agent to call. `answer_with_openai_rag()` instead returns
+both the generated response and the raw retrieved context chunks, so it
+can be used directly in the Activity 1 RAGAS evaluation to compare against
+the Fireworks-powered pipeline.
 """
 
 from __future__ import annotations
 
 import os
 from functools import lru_cache
-from typing import Annotated, TypedDict
+from typing import TypedDict
 
 import tiktoken
 from langchain_community.document_loaders import DirectoryLoader, PyMuPDFLoader
 from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
 from langchain_openai.embeddings import OpenAIEmbeddings
 from langchain_qdrant import QdrantVectorStore
 from langgraph.graph import START, StateGraph
+
 
 
 def _tiktoken_len(text: str) -> int:
@@ -40,7 +46,7 @@ class _RAGState(TypedDict):
     response: str
 
 
-def _build_rag_graph(data_dir: str):
+def _build_openai_rag_graph(data_dir: str):
     """Construct and compile a minimal RAG graph.
 
     Steps:
@@ -69,11 +75,8 @@ def _build_rag_graph(data_dir: str):
 
     # Embeddings and vector store (in-memory Qdrant)
     embedding_model = OpenAIEmbeddings(
-        model=os.environ.get("FIREWORKS_EMBEDDING_MODEL", "accounts/fireworks/models/qwen3-embedding-8b"),
-        openai_api_key=os.environ["FIREWORKS_API_KEY"],
-        openai_api_base="https://api.fireworks.ai/inference/v1",
-        check_embedding_ctx_length=False,
-        dimensions=4096,
+        model="text-embedding-3-small",
+        openai_api_key=os.environ["OPENAI_API_KEY"],
     )
     qdrant_vectorstore = QdrantVectorStore.from_documents(
         documents=chunks,
@@ -91,9 +94,8 @@ def _build_rag_graph(data_dir: str):
     )
     chat_prompt = ChatPromptTemplate.from_messages([("human", human_template)])
     generator_llm = ChatOpenAI(
-        model=os.environ.get("FIREWORKS_CHAT_MODEL", "accounts/fireworks/models/gpt-oss-20b"),
-        openai_api_key=os.environ["FIREWORKS_API_KEY"],
-        openai_api_base="https://api.fireworks.ai/inference/v1",
+        model="gpt-4.1-mini",
+        openai_api_key=os.environ["OPENAI_API_KEY"],
     )
 
     def retrieve(state: _RAGState) -> _RAGState:
@@ -114,29 +116,16 @@ def _build_rag_graph(data_dir: str):
 
 
 @lru_cache(maxsize=1)
-def _get_rag_graph():
+def _get_openai_rag_graph():
     """Return a cached compiled RAG graph built from RAG_DATA_DIR."""
     data_dir = os.environ.get("RAG_DATA_DIR", "data")
-    return _build_rag_graph(data_dir)
+    return _build_openai_rag_graph(data_dir)
 
-
-@tool
-def retrieve_information(
-    query: Annotated[str, "query to ask the retrieve information tool"],
-):
-    """Use Retrieval Augmented Generation to retrieve information about feline health, including life stage care, nutrition, vaccinations, parasite control, behavior, diagnostics, and veterinary guidelines for cats."""
-    graph = _get_rag_graph()
-    result = graph.invoke({"question": query})
-    # Prefer returning the response string if available
-    if isinstance(result, dict) and "response" in result:
-        return result["response"]
-    return result
-
-def answer_with_fireworks_rag(question: str) -> dict:
-    graph = _get_rag_graph()
+def answer_with_openai_rag(question: str) -> dict:
+    graph = _get_openai_rag_graph()
     result = graph.invoke(
     {"question": question},
-    config={"metadata": {"pipeline": "fireworks"}},
+    config={"metadata": {"pipeline": "openai"}},
     )
     return {
         "response": result.get("response", ""),
