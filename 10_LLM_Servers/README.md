@@ -154,3 +154,52 @@ Swap out the Fireworks AI endpoints for **locally-running open-source models** u
 - Reflect: what are the trade-offs of local models vs. managed endpoints in a production setting?
 
 Include your findings and a demo in your Loom video.
+
+Objective: Leverage the Fireworks-hosted embedding and chat models for fully local equivalents running on Ollama, rebuild the RAG pipeline, and compare quality and latency against the Fireworks hosted endpoints. 
+
+**Setup:** Ollama was installed, and pulled 2 models: llama3.2 (2B chat model) and nomic embed text (embedding only model). langchain-ollama was added to pyproject.toml and installed via uv sync so that ChatOllama/OllamaEmbeddings properly pointed at Ollamas local API. 
+
+**Build:** Created app/ollama_rag.py structurally similar to [rag.py](http://rag.py) and openai_rag.py with the same state schema, same retrieve to generate graph, same content/query/prompt. All unchanged to ensure comparison is isolated to the underlying model. The only difference is embedding and chat model constructs. 
+
+**Quality:** 
+
+=== Fireworks (gpt-oss-20b) ===
+
+{'faithfulness': 0.8627, 'context_recall': 0.9667, 'factual_correctness(mode=f1)': 0.6910}
+
+=== OpenAI (gpt-4.1-mini) ===
+
+{'faithfulness': 0.8900, 'context_recall': 0.9167, 'factual_correctness(mode=f1)': 0.6980}
+
+=== Ollama (llama3.2 / nomic-embed-text) ===
+
+{'faithfulness': 0.8633, 'context_recall': 0.9167, 'factual_correctness(mode=f1)': 0.5300}
+
+Faithfulness and context recall for Ollama are in line to OpenAI and Fireworks. nomic-embed-text is pulling relevant chunks (0.9167). The biggest gap is factual correctness at 0.530, meaningfully below OpenAI (0.69) and Fireworks (0.69).
+
+At 3B parameter, it is not surprising the performance is lower than a 20B+ hosted model, even when it's reading the same retrieved context. 
+
+**Latency:** 
+
+ollama:  2.48 sec/2.94 sec
+
+Fireworks: 4.60 sec/6.90 sec
+
+OpenAI: - / 4.82 sec
+
+Ran 3 times, with adding OpenAI in the last run as I was curious. 
+
+Running 3 times shows that Olla is the fastest, and Fireworks slowest. This may be due to the fact that llama3.2 is the smallest model, so model size might be the leading cause though infrastructure location (local vs hosted) could also impact the results. 
+
+However, this lab did not capture or test the benefit of hosted infrastructure which is sustained throughput under concurrent load (tested in this lab with the 24 concurrent requests). Fireworks is built for product systems to manage spikes and concurrent runs. Fireworks is able to manage these operations that local wont be able to do as (1) multiple GPUs, load balnaced; (2) continuous batching where single GPU process token generation can handle several requests simultanenously; and (3) horizontal scaling where hosted platforms can spin up to absorb traffic 
+
+**Reflection**: local vs managed endpoint tradeoffs 
+
+Local models cost nothing per query, keeps everything on device, and are not subect to shared rate limits. However, given the meaningful drop in factual correctness (0.5 vs 0.69) with the smaller local model and no evidence it can sustain concurrent production traffic the same way a managed endpoint can and does not provide support for key operational concerns (i.e. uptime, scaling, monitoring, model upgrades available in managed endpoints)
+
+However, given the cost, access, and ease of use, local models are probably a good fit for prototying, privacy sensitive work that is not dependent on production capabilities 
+
+
+
+
+

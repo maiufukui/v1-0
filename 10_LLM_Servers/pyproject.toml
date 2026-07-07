@@ -16,6 +16,7 @@ dependencies = [
     "langchain-community>=0.4.1",
     "langchain-text-splitters>=1.1.1",
     "langchain-qdrant>=1.1.0",
+    "langchain-ollama",
     "qdrant-client>=1.17.0",
     "arxiv>=2.1.0",
     "pymupdf>=1.27.1",

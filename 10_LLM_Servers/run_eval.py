@@ -6,6 +6,7 @@ from ragas.metrics import Faithfulness, LLMContextRecall, FactualCorrectness
 from eval_dataset import TEST_QUESTIONS
 from app.rag import answer_with_fireworks_rag
 from app.openai_rag import answer_with_openai_rag
+from app.ollama_rag import answer_with_ollama_rag
 
 from langchain_openai import ChatOpenAI
 from ragas.llms import LangchainLLMWrapper
@@ -41,13 +42,21 @@ fireworks_dataset = build_samples(answer_with_fireworks_rag)
 print("Running OpenAI pipeline over all test questions...")
 openai_dataset = build_samples(answer_with_openai_rag)
 
+print("Running Ollama pipeline over all test questions...")
+ollama_dataset = build_samples(answer_with_ollama_rag)
+
 print("Scoring Fireworks pipeline with RAGAS...")
 fireworks_scores = evaluate(fireworks_dataset, metrics=metrics)
 
 print("Scoring OpenAI pipeline with RAGAS...")
 openai_scores = evaluate(openai_dataset, metrics=metrics)
 
+print("Scoring Ollama pipeline with RAGAS...")
+ollama_scores = evaluate(ollama_dataset, metrics=metrics)
+
 print("\n=== Fireworks (gpt-oss-20b) ===")
 print(fireworks_scores)
 print("\n=== OpenAI (gpt-4.1-mini) ===")
 print(openai_scores)
+print("\n=== Ollama (llama3.2 / nomic-embed-text) ===")
+print(ollama_scores)
