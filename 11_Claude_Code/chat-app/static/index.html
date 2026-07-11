@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat</title>
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+    <main class="chat-app">
+        <h1>Chat</h1>
+        <div id="history" class="history" aria-live="polite"></div>
+        <form id="chat-form" class="chat-form">
+            <input
+                id="message-input"
+                type="text"
+                placeholder="Type a message..."
+                autocomplete="off"
+                required
+            />
+            <button type="submit">Send</button>
+        </form>
+    </main>
+    <script src="/static/app.js"></script>
+</body>
+</html>
