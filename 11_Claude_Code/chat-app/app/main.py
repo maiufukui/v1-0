@@ -2,6 +2,7 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from app.chat import generate_reply
@@ -29,3 +30,6 @@ def read_index() -> FileResponse:
 @app.post("/api/chat")
 def post_chat(request: ChatRequest) -> ChatResponse:
     return ChatResponse(reply=generate_reply(request.message))
+
+
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
