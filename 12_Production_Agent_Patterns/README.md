@@ -1,5 +1,3 @@
-
-
 # Session 12: Production Agent Patterns - Guardrails, Caching, and A2A
 
 ### [Quicklinks](https://github.com/AI-Maker-Space/The-AI-Engineering-Certification-v1.0/tree/main/00_Docs/Modules)
@@ -8,8 +6,6 @@
 | 📰 Session Sheet                      | ⏺️ Recording | 🖼️ Slides | 👨‍💻 Repo    | 📝 Homework | 📁 Feedback |
 | ------------------------------------- | ------------ | ---------- | ------------- | ----------- | ----------- |
 | Session 12: Production Agent Patterns | Recording    | Slides     | You are here! | Homework    | Feedback    |
-
-
 
 
 ## Main Assignment
@@ -26,11 +22,11 @@ Each part is deliberately short: one new concept and a handful of tasks. The par
 
 ## The Parts
 
-**`01_Cat_Health_Agent_Guardrails.ipynb`** — Build layered guardrails around the agent: deterministic input rails (emergency escalation, injection blocking, PII redaction), a model-based topical guard, and output rails that check and repair draft replies, wired into the agent loop with LangChain middleware.
+`01_Cat_Health_Agent_Guardrails.ipynb` — Build layered guardrails around the agent: deterministic input rails (emergency escalation, injection blocking, PII redaction), a model-based topical guard, and output rails that check and repair draft replies, wired into the agent loop with LangChain middleware.
 
-**`02_Cat_Health_Agent_Caching.ipynb`** — Stop paying for repeated work: exact-match response caching, a from-scratch semantic cache (and why it is dangerous in a health domain), embedding and tool-result caches, and provider-side prompt caching you can measure in the usage details.
+`02_Cat_Health_Agent_Caching.ipynb` — Stop paying for repeated work: exact-match response caching, a from-scratch semantic cache (and why it is dangerous in a health domain), embedding and tool-result caches, and provider-side prompt caching you can measure in the usage details.
 
-**`a2a/`** — Build the A2A protocol from the wire up: a specialist agent behind a minimal A2A server (`server.py`), a discovery-driven client (`client.py`), and a front-desk agent that delegates across the protocol (`front_desk.py`). Start with [`a2a/README.md`](a2a/README.md) — it walks through starting the server and testing it with curl, the client, the delegation demo, and a no-API-key smoke test.
+`a2a/` — Build the A2A protocol from the wire up: a specialist agent behind a minimal A2A server (`server.py`), a discovery-driven client (`client.py`), and a front-desk agent that delegates across the protocol (`front_desk.py`). Start with `[a2a/README.md](a2a/README.md)` — it walks through starting the server and testing it with curl, the client, the delegation demo, and a no-API-key smoke test.
 
 ## Setup
 
@@ -59,13 +55,15 @@ The `a2a/` mini-project starts a local HTTP server on port 9999. Nothing leaves 
 
 ## Questions
 
+
+
 ### ❓ Question #1
 
 In `01_Cat_Health_Agent_Guardrails.ipynb`, input rails run in a specific order: deterministic checks (emergency, injection, PII) first, then the model-based topical guard. Why is that ordering important in production — and why do the rails return decisions like `escalate`, `block`, and `rewrite` instead of a simple boolean pass/fail?
 
 #### ✅ Answer
 
-_(insert your answer here)_
+Deterministic checks run first because they are cheap, fast and not probalistic where an emergency signal or injection attempt has to be caught before the input reaches a model call. This is important as a successful injection could corrupt the judgement of the model based guard that follows. Running the topical guard last also means we only need to pay its latency/cost on input that already passed the free checks. A boolean pass/fail cant express what should happen next i.e. an emergency needs to escalate to a human or urgent path, an injection attempt needs to be blocked, and mild topic drift needs a rewrite rather than an outright refusal. Collapsing all 3 failure modes into one generic "reject" would either over block legitimate queries or under respond to genuinely dangerous ones 
 
 ### ❓ Question #2
 
@@ -73,7 +71,7 @@ In `02_Cat_Health_Agent_Caching.ipynb`, a semantic cache can serve a paraphrased
 
 #### ✅ Answer
 
-_(insert your answer here)_
+A single similarity threshold can not fix this because embedding distance measures surface level semantic closeness, which often misses real word meaning differences. Even with a better threshold, paraphrases could still be missed (which is critical for a health app like this) and if its too strict, it would limit what is legitimate. Another approach is implementing a stakes aware routing where it is used to detect high risk categories and route those queries around the cache entirely, and instead goes through the full guardrail pipe. 
 
 ## Submitting Your Homework
 
