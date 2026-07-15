@@ -1,24 +1,29 @@
-<p align = "center" draggable="false" ><img src="https://github.com/AI-Maker-Space/LLM-Dev-101/assets/37101144/d1343317-fa2f-41e1-8af1-1dbb18399719"
-     width="200px"
-     height="auto"/>
-</p>
 
-<h1 align="center" id="heading">Session 11: Claude Code & the Claude Agent SDK</h1>
 
-| 📰 Session Sheet | ⏺️ Recording | 🖼️ Slides | 👨‍💻 Repo | 📝 Homework | 📁 Feedback |
-|:-----------------|:-------------|:----------|:----------|:------------|:------------|
-| [Session 11: Claude Code & Claude Agent SDK ](https://github.com/AI-Maker-Space/The-AI-Engineering-Certification-v1.0/tree/main/00_Docs/Modules/11_Claude_Code) |[Recording!](https://us02web.zoom.us/rec/share/2I5HA6DwVFgmtyjPaq1SJDgkaVEuYZoWYyMCK8DOAZ99Zm6f7dTi0IGONXj6mRel.YHFzKF03mI5v6JAM) <br> passcode: `&Qhi!cf0`| [Session 11 Slides](https://canva.link/uw1cl42x84tm6zh) |You are here! <br><br> [Certification Challenge](https://github.com/AI-Maker-Space/The-AI-Engineering-Certification-v1.0/tree/main/00_Docs/Certification%20Challenge) | [Optional Session 11 Assignment](https://forms.gle/sAyr5BgBLTfgJV8EA) <br><br>  [Cert Challenge Submission Form](https://forms.gle/xtM9F38nfRKcdjH97)| [Feedback 7/7](https://forms.gle/oDrguLDNvva65mtM8) |
+# Session 11: Claude Code & the Claude Agent SDK
+
+
+| 📰 Session Sheet                                                                                                                                               | ⏺️ Recording                                                                                                                                           | 🖼️ Slides                                              | 👨‍💻 Repo                                                                                                                                                   | 📝 Homework                                                                                                                                 | 📁 Feedback                                         |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| [Session 11: Claude Code & Claude Agent SDK](https://github.com/AI-Maker-Space/The-AI-Engineering-Certification-v1.0/tree/main/00_Docs/Modules/11_Claude_Code) | [Recording!](https://us02web.zoom.us/rec/share/2I5HA6DwVFgmtyjPaq1SJDgkaVEuYZoWYyMCK8DOAZ99Zm6f7dTi0IGONXj6mRel.YHFzKF03mI5v6JAM) passcode: `&Qhi!cf0` | [Session 11 Slides](https://canva.link/uw1cl42x84tm6zh) | You are here! [Certification Challenge](https://github.com/AI-Maker-Space/The-AI-Engineering-Certification-v1.0/tree/main/00_Docs/Certification%20Challenge) | [Optional Session 11 Assignment](https://forms.gle/sAyr5BgBLTfgJV8EA) [Cert Challenge Submission Form](https://forms.gle/xtM9F38nfRKcdjH97) | [Feedback 7/7](https://forms.gle/oDrguLDNvva65mtM8) |
+
+
+
 
 ## Useful Resources
 
 **Claude Code**
+
 - [Claude Code Documentation](https://code.claude.com/docs) — official docs: setup, workflows, settings
 - [Claude Code Quickstart](https://code.claude.com/docs/en/quickstart) — from install to first session
 - [Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices) — Anthropic engineering guide
 
 **Claude Agent SDK**
+
 - [Agent SDK Overview](https://docs.anthropic.com/en/api/agent-sdk/overview) — what the SDK is and when to use it
 - [Building Agents with the Claude Agent SDK](https://www.anthropic.com/engineering/building-agents-with-the-claude-agent-sdk) — Anthropic engineering deep dive
+
+
 
 ## Main Assignment
 
@@ -42,7 +47,11 @@ Work through the three guides in order:
 03_Claude_Agent_SDK.md         # add the agent and connect it to your website
 ```
 
+
+
 ## Outline
+
+
 
 ### Breakout Room #1: Claude Code, the Agent SDK, and the Connection
 
@@ -58,7 +67,11 @@ Work through the three guides in order:
 - Question #3 and Question #4
 - Activity #1: Level Up the Chat App
 
+
+
 ## Questions
+
+
 
 ### ❓ Question #1
 
@@ -66,7 +79,7 @@ While scaffolding in Task 3 you used **plan mode** before letting Claude Code wr
 
 #### ✅ Answer
 
-_(insert your answer here)_
+An agent with shell access can run irreversible commands deleting firles, force pushing, overwriting work, and can not judge on its own which actions need a human's review first. The permission system therefore keeps a human in the loop before anything with real blast radius happens. Plan mode matters most on an empty directory because there is not existing code to constrain an agent's chouces. Incorrect structual decision are expensive to fix later.  
 
 ### ❓ Question #2
 
@@ -74,7 +87,7 @@ _(insert your answer here)_
 
 #### ✅ Answer
 
-_(insert your answer here)_
+[Claude.md](http://Claude.md) includes all the important details for that project. It holds what a session cant cheaply re-derive i.e. exact run/test commands, and architecture decisions invisible from any single file but helpful to share/have in each session. It should exclude anything discovrable by reading code, long prose r anything that goes stale. This is important as the project [claude.md](http://claude.md) file is read for each session and therefore can mislead all future sessions. Having this file simplifies the workflow as the user does not have to restate all the important details for claude to remember and this helps with context management to provide the agent with all the right context without bloating the context window. 
 
 ### ❓ Question #3
 
@@ -82,7 +95,10 @@ The Agent SDK gives you the same agent loop that powers Claude Code. Compare thi
 
 #### ✅ Answer
 
-_(insert your answer here)_
+The SDK gives me the agent loop for free - tool calling, retries, error handling, context compaction and the permission system instead of hand wiring a graph of nodes and edges needed in LangGraph. However, what is lost from this simplicity/abstraction is control over the loop's internals. I can not define custom state transitions or arbitrary graph topologies, and Im locked into Claude models rather than choosing a provider per node.   
+
+
+Langraph makes sense when I needed a specific multi-step reasoning shape, but in a simple "answer questions about this repo" a SDK off the shelf loop is sufficient and right level of abstraction 
 
 ### ❓ Question #4
 
@@ -90,7 +106,9 @@ Your chat app could have called a chat completions API directly, the way you did
 
 #### ✅ Answer
 
-_(insert your answer here)_
+A plain chat completion only returns text, it can't look at my codebase, so I'd have to manually provide relevant file contents into the prompt myself. Routing through query () gives the model actual tools to go find what it needs, which is what makes "answer questions about this repo" possible at all. 
+
+However the new risk is that a tool-using agent can act on the filesystem, not just describe it. A plain completion can only generate text, but an agent with tools could edit or delete files if I let it. My allowlist restricts it to read-only tools so no matter what a user types into the chat box, the agent is structurally limited from writing or running shell commands. The allowlist is the permission gate a human would normally provide interactively.
 
 ## Activity 1: Level Up the Chat App
 
@@ -117,6 +135,8 @@ The working chat app!
 - A short Loom showing:
   - Claude Code scaffolding or extending the app (plan → implement → verify — show the plan!); and
   - the chat app answering real questions about a repository, including at least one visible custom-tool use
+
+
 
 ## Share 🚀
 
@@ -146,6 +166,8 @@ Shout out to @AIMakerspace !
 Feel free to reach out if you're curious or would like to collaborate on similar projects! 🤝🔥
 ```
 
+
+
 ## Submitting Your Homework (Optional For Extra Mark)
 
 Follow these steps to prepare and submit your homework:
@@ -158,10 +180,10 @@ git pull upstream main
 git push origin main
 ```
 
-2. Work through `01_Installing_Claude_Code.md`, `02_Using_Claude_Code.md`, and `03_Claude_Agent_SDK.md` in order.
-3. Build your chat app in a new `chat-app/` folder inside this session directory (include its `CLAUDE.md` — we want to see it!).
-4. Fill in your answers to Questions #1–#4 in this README.
-5. Complete Activity #1 and record your Loom video.
-6. Add, commit, and push your work to your origin repository. Remove `.env` files and API keys before committing.
+1. Work through `01_Installing_Claude_Code.md`, `02_Using_Claude_Code.md`, and `03_Claude_Agent_SDK.md` in order.
+2. Build your chat app in a new `chat-app/` folder inside this session directory (include its `CLAUDE.md` — we want to see it!).
+3. Fill in your answers to Questions #1–#4 in this README.
+4. Complete Activity #1 and record your Loom video.
+5. Add, commit, and push your work to your origin repository. Remove `.env` files and API keys before committing.
 
 When submitting your homework, provide the GitHub URL to your repo.
