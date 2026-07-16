@@ -1,13 +1,24 @@
+<<<<<<< Updated upstream
+=======
+
+
+>>>>>>> Stashed changes
 # Session 9: Agent Servers
 
 ### [Quicklinks]()
 
 
+<<<<<<< Updated upstream
 | Session Sheet                                                                                                                                                              | Recording                                                                                                                                              | Slides                                                 | Repo          | Homework                                                    | Feedback                                            |
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ | ------------- | ----------------------------------------------------------- | --------------------------------------------------- |
 | [Session 9: Agent Servers & E2E Agents](https://github.com/AI-Maker-Space/The-AI-Engineering-Certification-v1.0/tree/main/00_Docs/Modules/09_Agent_servers_%26_E2E_Agents) | [Recording!](https://us02web.zoom.us/rec/share/ByhPGNz-CQ4C9k859VnRIoGPfkS4AdBzLPQiCIgEafYiDjYxtNXUjidTI1dM-79R.oCxzwNn0SyVAWj88) passcode: `r14dvS$V` | [Session 9 Slides](https://canva.link/yqymnzjmzhpnyiy) | You are here! | [Session 9 Assignment](https://forms.gle/PMmqBBLZ8d8fGg1L8) | [Feedback 7/1](https://forms.gle/36tnHPpeS562DD3fA) |
 
 
+=======
+| Session Sheet                                                         | Recording | Slides | Repo          | Homework | Feedback |
+| --------------------------------------------------------------------- | --------- | ------ | ------------- | -------- | -------- |
+| [Agent Servers](../00_Docs/Session_Sheets/15_Agent_Servers/README.md) |           |        | You are here! |          |          |
+>>>>>>> Stashed changes
 
 
 ## Useful Resources
@@ -21,7 +32,11 @@
 
 **Frontend Integration**
 
+<<<<<<< Updated upstream
 - `[@langchain/react` — `useStream` hook]([https://www.npmjs.com/package/@langchain/react](https://www.npmjs.com/package/@langchain/react)) — Stream agent responses in React/Next.js
+=======
+- `[@langchain/react` — `useStream` hook](https://www.npmjs.com/package/@langchain/react) — Stream agent responses in React/Next.js
+>>>>>>> Stashed changes
 - `[langgraph-nextjs-api-passthrough](https://www.npmjs.com/package/langgraph-nextjs-api-passthrough)` — Secure Next.js API routes that proxy to your deployed agent without exposing keys in the browser
 - [Next.js on Vercel](https://vercel.com/docs/frameworks/nextjs) — Deploy the frontend
 
@@ -370,8 +385,11 @@ NEXT_PUBLIC_API_URL=https://your-app.vercel.app/api
 ```
 
 1. Deploy
+<<<<<<< Updated upstream
 
 
+=======
+>>>>>>> Stashed changes
 
 ### 3. Verify end-to-end
 
@@ -469,9 +487,13 @@ Why does LangSmith deploy your agent as an API backend only, and why do you stil
 
 #### Answer
 
+<<<<<<< Updated upstream
 Langsmith deploys only the agent's runtime, the compiled graph behind a threads/runs/assistant API; it is not built to serve HTML/CSS/JS to a browser. A chat UI needs actual page hosting, routing, and client rendering which is what Vercel does for Next,js apps. 
 
 Splitting them also enforces a security boundary. The Langsmith API key needed to call the deployment must never reach the browser, so the frontend's own server side proxy (route.ts) is the only thing that ever holds it. 
+=======
+*(insert your answer here)*
+>>>>>>> Stashed changes
 
 ### Question #2
 
@@ -479,7 +501,11 @@ Why should the LangSmith API key live in a Next.js API route (server-side) inste
 
 #### Answer
 
+<<<<<<< Updated upstream
 Anything shipped to the browser including NEXT_PUBLIC_ env vars or hardcoded client JS is visible to anyone who opens dev tools or inspects network requests. The API keys is a bearer credential: whoever holds it can call the deployed agent driectly, run up billed usage and pull run histories. Routing every request through the server-side Next.js route means the key only lives on Vercel's server, injected from a private env var. The broswer only ever talks to the app's own domain never to Langsmith. 
+=======
+*(insert your answer here)*
+>>>>>>> Stashed changes
 
 ## Activity 1: Build a Helpfulness Loop in Production
 
@@ -511,6 +537,7 @@ Gap: The studio vs production test shows that in addition to poetntial judge inc
 
 Research [LangSmith Deployments custom routes](https://github.com/langchain-samples/lsd-custom-route-react-ui) and describe how you could add authentication so each user only sees their own threads. Optionally implement a simple auth gate on your Vercel frontend.
 
+<<<<<<< Updated upstream
 Include your findings and a demo in your Loom video.
 
 1. Add a login screen to the site frontend/app/login/page.tsx. Right now, anyone can open the chat and start typing with no real sign in at all.
@@ -520,3 +547,6 @@ Include your findings and a demo in your Loom video.
 5. Turn on the "only shown your own" rule. Once the server knows who is asking, another setting tags every new converation with that users name and filters only conversations with that users' name
 6. Test with 2 users with a smoke_tst.py. Log in as 2 different users in 2 different browser windows. Each start a conversation to confirm neither can see the other's conversation
 
+=======
+Include your findings and a demo in your Loom video.
+>>>>>>> Stashed changes

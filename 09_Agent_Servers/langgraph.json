@@ -16,7 +16,11 @@
     "agent_helpful": {
       "graph_id": "agent_with_helpfulness",
       "name": "Agent with Helpfulness Loop",
+<<<<<<< Updated upstream
       "description": "Wraps simple_agent with a judge + retry loop."
+=======
+      "description": "Retries its own answer when a judge model rates it unhelpful."
+>>>>>>> Stashed changes
     }
   }
 }
