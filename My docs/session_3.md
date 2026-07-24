@@ -387,3 +387,4 @@ The key insight from this activity: adding a new triple to the graph is a delibe
 3. **Summarization compresses history — it does not replace memory.** Anything a user might want to correct or delete must live in the structured store with provenance, not in a generated summary.
 
 4. **Graph retrieval and dense retrieval are complementary, not competing.** Dense finds similar chunks. Graph follows the connection path between concepts. The contract in the tool docstrings is what ensures the agent chooses the right tool.
+
